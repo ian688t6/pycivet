@@ -83,7 +83,7 @@ class Prx():
             buf = self.dgl.read(PRX_SLAVE_ADDR, 1)
             if buf[0] == 0xAD:
                 return True
-            return False
+        return False
 
     def readpage(self, addr, size):
         cmd = [ 0xFB, 
@@ -108,3 +108,6 @@ class Prx():
                 (addr >> 0)  & 0xFF ]
         self.dgl.write(PRX_SLAVE_ADDR, cmd + data)
         return self.wait(3)
+    
+    def download(self, binfile='', verify=0):
+        pass
