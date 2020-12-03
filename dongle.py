@@ -1,7 +1,7 @@
 from ftd2xx._ftd2xx import *
 from ftd2xx.defines import *
 import logging
-import ftd2xx
+import ftdi.ftd2xx as ftd2xx
 import ftdi.ft4222 as ft4222
 
 class Dongle():
