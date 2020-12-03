@@ -18,6 +18,9 @@ def log_save(prx, logfile):
     logging.basicConfig(filename=logfile, encoding='utf-8', format='%(asctime)s %(levelname)s:%(message)s', level=logging.DEBUG)
     log_show(prx)
 
+def firmware_download(prx, binfile):
+    prx.download(binfile)
+
 if __name__ == "__main__":
     # Todo: initial logging module
     print('welcome using pycivet')
@@ -37,6 +40,9 @@ if __name__ == "__main__":
             log_show(rx)
         else:
             log_save(rx, args.log)
-        pass
+        
+    if len(args.download) > 0:
+        firmware_download(rx, args.download)
+
     rx.disconnect()
     print('pycivet quit')
