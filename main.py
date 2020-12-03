@@ -19,7 +19,7 @@ def log_save(prx, logfile):
     log_show(prx)
 
 def firmware_download(prx, binfile):
-    prx.download(binfile)
+    prx.download(binfile, 1)
 
 if __name__ == "__main__":
     # Todo: initial logging module
