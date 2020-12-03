@@ -25,7 +25,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='pycivet')
     parser.add_argument('--log', nargs="?", type=str, default=None, const='', help='show rx running log')
     args = parser.parse_args()
-    if len(args._get_args()) == 0:
+    if len(sys.argv) == 1:
+        parser.print_help()
         sys.exit(0)
     rx = Prx()
     rx.connect()
