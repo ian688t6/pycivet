@@ -114,6 +114,11 @@ class Prx():
         pass
 
     def getlog(self):
-        data = self.dgl.read(PRX_SLAVE_ADDR, 256)
-        return bytes([d for d in data if d != 0x0a and d != 0xe7]).decode('utf-8', 'strict')
-
+        while True:
+            try:
+                data = self.dgl.read(PRX_SLAVE_ADDR, 256)
+                logline = bytes([d for d in data if d != 0x0a and d != 0xe7]).decode('utf-8', 'strict')
+                if len(logline) > 0:
+                    logging.info(logline)
+            except UnicodeDecodeError:
+                pass
