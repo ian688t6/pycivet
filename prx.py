@@ -1,4 +1,5 @@
 import time
+import logging
 from dongle import Dongle
 
 PRX_SLAVE_ADDR = 0x24
@@ -51,7 +52,7 @@ class Prx():
         self.dgl.write(PRX_SLAVE_ADDR, cmd)
         data = self.dgl.read(PRX_SLAVE_ADDR, 2)
         id = (data[0] << 8) | data[1]
-        print("CHIP ID: " + hex(id))
+        logging.debug("CHIP ID: " + hex(id))
         return id
 
     def writesram(self, addr, data):
@@ -111,3 +112,8 @@ class Prx():
     
     def download(self, binfile='', verify=0):
         pass
+
+    def getlog(self):
+        data = self.dgl.read(PRX_SLAVE_ADDR, 256)
+        return bytes([d for d in data if d != 0x0a and d != 0xe7]).decode('utf-8', 'strict')
+

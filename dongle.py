@@ -1,5 +1,6 @@
 from ftd2xx._ftd2xx import *
 from ftd2xx.defines import *
+import logging
 import ftd2xx
 import ftdi.ft4222 as ft4222
 
@@ -14,7 +15,7 @@ class Dongle():
     def open(self, devname):
         for d in self.devs:
             if d['description'] == devname:
-                print('open ' + str(devname))
+                logging.debug('open ' + str(devname))
                 self.ft = ftd2xx.openEx(d['location'], OPEN_BY_LOCATION)
                 ft4222.SetClock(self.ft.handle, 400)
                 ft4222.I2CMaster_Init(self.ft.handle, 400)
