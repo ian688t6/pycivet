@@ -52,7 +52,7 @@ class Prx():
         self.dgl.write(PRX_SLAVE_ADDR, cmd)
         data = self.dgl.read(PRX_SLAVE_ADDR, 2)
         id = (data[0] << 8) | data[1]
-        logging.debug("CHIP ID: " + hex(id))
+        print("CHIP ID: " + hex(id))
         return id
 
     def writesram(self, addr, data):
