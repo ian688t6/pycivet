@@ -25,7 +25,7 @@ if __name__ == "__main__":
     # Todo: initial logging module
     print('welcome using pycivet')
     
-    parser = argparse.ArgumentParser(description='pycivet')
+    parser = argparse.ArgumentParser(description='pycivet host tool for debug and download firmware')
     parser.add_argument('--log', metavar='xxxx.txt', nargs="?", type=str, default=None, const='', help='show rx running log')
     parser.add_argument('--download', metavar='xxxx.bin', nargs=1, type=str, help='download the firmware')
     args = parser.parse_args()
