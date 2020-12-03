@@ -1,6 +1,5 @@
 from ftdi.ftd2xx._ftd2xx import *
 from ftdi.ftd2xx.defines import *
-import logging
 import ftdi.ftd2xx as ftd2xx
 import ftdi.ft4222 as ft4222
 
@@ -25,7 +24,6 @@ class Dongle():
         ft4222.I2CMaster_Reset(self.ft.handle)
         ft4222.UnInitialize(self.ft.handle)
         self.ft.close()
-        pass
     
     def read(self, slave, len):
         return ft4222.I2CMaster_Read(self.ft.handle, slave, len)
