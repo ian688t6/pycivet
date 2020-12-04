@@ -3,7 +3,7 @@
 
 __author__ = "Jason M. Battle"
 """
-
+import time
 import ctypes
 from collections import OrderedDict
 
@@ -209,7 +209,13 @@ class I2CMaster():
             self._options = ctypes.c_ulong(I2C_TRANSFER_OPTIONS_START_BIT | I2C_TRANSFER_OPTIONS_STOP_BIT | I2C_TRANSFER_OPTIONS_NACK_LAST_BYTE | I2C_TRANSFER_OPTIONS_FAST_TRANSFER_BYTES)
         else:
             self._options = ctypes.c_ulong(I2C_TRANSFER_OPTIONS_START_BIT | I2C_TRANSFER_OPTIONS_STOP_BIT | I2C_TRANSFER_OPTIONS_NACK_LAST_BYTE)
-        dll.I2C_DeviceRead(self._handle, self._devaddress, self._readbytes, ctypes.byref(self._readbuffer), ctypes.byref(self._numsent), self._options)
+        t  = 0
+        while t < 0.3:
+            t += 0.05
+            time.sleep(0.05)
+            status = dll.I2C_DeviceRead(self._handle, self._devaddress, self._readbytes, ctypes.byref(self._readbuffer), ctypes.byref(self._numsent), self._options)
+            if status == 0:
+                break
         return self._readbuffer[:]
 
     def I2CMaster_Write(self, slave, data, numbytes, fastbytes = True):
@@ -223,8 +229,15 @@ class I2CMaster():
             self._options = ctypes.c_ulong(I2C_TRANSFER_OPTIONS_START_BIT | I2C_TRANSFER_OPTIONS_STOP_BIT | I2C_TRANSFER_OPTIONS_NACK_LAST_BYTE | I2C_TRANSFER_OPTIONS_FAST_TRANSFER_BYTES)
         else:
             self._options = ctypes.c_ulong(I2C_TRANSFER_OPTIONS_START_BIT | I2C_TRANSFER_OPTIONS_STOP_BIT | I2C_TRANSFER_OPTIONS_NACK_LAST_BYTE)
-        dll.I2C_DeviceWrite(self._handle, self._devaddress, self._writebytes, ctypes.byref(self._buffer), ctypes.byref(self._numsent), self._options)
-
+        
+        t  = 0
+        while t < 0.3:
+            t += 0.05
+            time.sleep(0.05)
+            status = dll.I2C_DeviceWrite(self._handle, self._devaddress, self._writebytes, ctypes.byref(self._buffer), ctypes.byref(self._numsent), self._options)
+            if status == 0:
+                break
+            
     def DeviceRead(self, devaddress, regaddress, numbytes, fastbytes=False):
         dll.I2C_DeviceWrite.argtypes = [ctypes.c_ulong, ctypes.c_ulong, ctypes.c_ulong, ctypes.POINTER(ctypes.c_ubyte), ctypes.POINTER(ctypes.c_ulong), ctypes.c_ulong] # Buffer argtype is single byte only (register address)    
         dll.I2C_DeviceWrite.restype = ctypes.c_ulong
