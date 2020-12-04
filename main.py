@@ -47,7 +47,8 @@ if __name__ == "__main__":
         parser.print_help()
         sys.exit(0)
     rx = Prx()
-    rx.connect()
+    rx.connect(b'UM232H')
+    # rx.connect(b'FT4222 A')
     if args.log != None:
         if args.log == "":
             logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.DEBUG)

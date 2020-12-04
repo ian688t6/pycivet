@@ -16,8 +16,8 @@ class Prx():
             content = f.read(size)
             return list(bytes(content))
 
-    def connect(self):
-        self.dgl.open(b'FT4222 A')
+    def connect(self, desc):
+        self.dgl.open(desc)
         self.isc_enter()
         self.getid()
         self.isc_exit()
