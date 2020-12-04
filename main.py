@@ -19,7 +19,21 @@ def log_save(prx, logfile):
     log_show(prx)
 
 def firmware_download(prx, binfile):
-    prx.download(binfile, 1)
+    print(binfile)
+    prx.writesram(0x50100088, 0x01)
+    prx.writesram(0x50100031, 0x00)
+    prx.writesram(0x50100038, 0xFF)
+    prx.writesram(0x38000074, 0x10)
+    prx.writesram(0x38000075, 0x10)
+    prx.writesram(0x50020000, 0x00)
+    prx.writesram(0x50020040, 0x00)
+    prx.writesram(0x3800005F, 0x44)
+
+    if prx.download(binfile, 1) == True:
+        print("Download Success")
+    else:
+        print("Download Failure")
+    prx.writesram(0x50100031, 0x01)
 
 if __name__ == "__main__":
     # Todo: initial logging module
@@ -42,7 +56,7 @@ if __name__ == "__main__":
             log_save(rx, args.log)
         
     if len(args.download) > 0:
-        firmware_download(rx, args.download)
+        firmware_download(rx, args.download[0])
 
     rx.disconnect()
     print('pycivet quit')

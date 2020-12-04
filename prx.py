@@ -1,3 +1,4 @@
+import os
 import time
 import logging
 from dongle import Dongle
@@ -8,6 +9,12 @@ class Prx():
     def __init__(self):
         self.dgl = Dongle()
         pass
+
+    def _readbin(self, binfile):
+        size = os.path.getsize(binfile)
+        with open(binfile, 'rb') as f:
+            content = f.read(size)
+            return list(bytes(content))
 
     def connect(self):
         self.dgl.open(b'FT4222 A')
@@ -111,7 +118,31 @@ class Prx():
         return self.wait(3)
     
     def download(self, binfile='', verify=0):
-        pass
+        content = self._readbin(binfile)
+        if len(content) == 0:
+            return False
+        address = 0
+        pagesize = 1024
+        totalsize = len(content)
+        while totalsize > 0:
+            if totalsize > pagesize:
+                self.writepage(address, content[address:(address + pagesize)], pagesize)
+                if verify:
+                    verifydata = self.readpage(address, pagesize)
+                    if verifydata != content[address:(address + pagesize)]:
+                        return False
+                totalsize -= pagesize
+                address += pagesize
+                print('#', end='')
+            else:
+                self.writepage(address, content[address:], totalsize)
+                if verify:
+                    verifydata = self.readpage(address, totalsize)
+                    if verifydata != content[address:]:
+                        return False
+                totalsize = 0
+                print('#')
+        return True
 
     def getlog(self):
         while True:
