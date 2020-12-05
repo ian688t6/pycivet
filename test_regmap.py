@@ -1,4 +1,4 @@
-from regmap import RegMap
+from cfs.regmap import RegMap
 
 if __name__ == '__main__':
     rmap = RegMap()

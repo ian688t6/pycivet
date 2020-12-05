@@ -2,7 +2,7 @@ import logging
 import argparse
 import os
 import sys
-from prx import Prx
+from cfs.prx import Prx
 
 def log_show(prx):
     try:
