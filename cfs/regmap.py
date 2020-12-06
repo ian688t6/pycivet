@@ -18,7 +18,7 @@ class RegMap():
         self.__regmaps = load_workbook(worksheet, data_only=True)
 
     def get_regblocks(self):
-        return self.__regmaps.sheetnames
+        return self.__regmaps.sheetnames[2:]
 
     def get_regmap(self, block):
         regmap = self.__regmaps[block]
