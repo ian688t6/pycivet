@@ -1,8 +1,8 @@
-from ftdi.ftd2xx._ftd2xx import *
-from ftdi.ftd2xx.defines import *
-import ftdi.ftd2xx as ftd2xx
-import ftdi.ft4222 as ft4222
-import ftdi.mpsse  as mpsse
+from cfs.ftdi.ftd2xx._ftd2xx import *
+from cfs.ftdi.ftd2xx.defines import *
+import cfs.ftdi.ftd2xx as ftd2xx
+import cfs.ftdi.ft4222 as ft4222
+import cfs.ftdi.mpsse  as mpsse
 
 class Dongle():
     def __init__(self):

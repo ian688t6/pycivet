@@ -1,7 +1,7 @@
 import os
 import time
 import logging
-from dongle import Dongle
+from  cfs.dongle import Dongle
 
 PRX_SLAVE_ADDR = 0x24
 
