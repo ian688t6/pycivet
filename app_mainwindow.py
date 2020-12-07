@@ -44,7 +44,7 @@ class AppMainWindow(QMainWindow):
         self.bin_data_model.setRowCount(row_count)
         j = 0
         for i in range(row_count):
-            item = QStandardItem('0x{:08X}'.format(i))
+            item = QStandardItem('0x{:08X}'.format(i * 16))
             self.bin_data_model.setItem(i, 0, item)
             if total_count >= 16:
                 for j in range(16):
