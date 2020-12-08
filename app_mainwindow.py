@@ -6,6 +6,8 @@ from ui.ui_mainwindow import Ui_MainWindow
 from ui.res_rc import *
 from cfs.regmap import RegMap
 from cfs.prx import Prx
+from app_logger import AppLogger
+from app_dl import AppDownloader
 
 class AppMainWindow(QMainWindow):
     def __init__(self, parent = None):
@@ -14,21 +16,8 @@ class AppMainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self._ui_init()
-        self._timer_init()
-
-    def _timer_init(self):
-        self.timlogger = QTimer()
-        self.timlogger.stop()
-        self.timlogger.setInterval(0)
-        self.timlogger.timeout.connect(self.do_update_log)
-
-    def _ui_bin_tabview_init(self):
-        self._bin_colmax = 17
-        self.bin_data_model = QStandardItemModel(5, self._bin_colmax, self)
-        self.bin_sel_model = QItemSelectionModel(self.bin_data_model)
-        self.ui.binTabView.setModel(self.bin_data_model)
-        self.ui.binTabView.setSelectionModel(self.bin_sel_model)
-        self.ui.binTabView.setEnabled(False)
+        self.applogger = AppLogger(self.ui, self.rx)
+        self.appdl = AppDownloader(self.ui, self.rx)
 
     def _ui_reg_tabview_init(self):
         self._regmap_colmax = 3
@@ -44,8 +33,11 @@ class AppMainWindow(QMainWindow):
         self.ui.actionDownload.setDisabled(True)
         self.ui.actionImport.setDisabled(True)
         self.ui.actionOpen.setDisabled(True)
-        self._ui_bin_tabview_init()
         self._ui_reg_tabview_init()
+        self._ui_init_regctl()
+
+    def _ui_init_regctl(self):
+        self.ui.hexRadioBtn.setChecked(True)
 
     def _ui_init_bincontent(self, content):
         total_count = len(content)
@@ -82,12 +74,7 @@ class AppMainWindow(QMainWindow):
                 j += 1
             j = 0
         self.ui.regmapTabView.setEnabled(True)
-
-    def do_update_log(self):
-        logdata = self.rx.get_logline()
-        if logdata != None:
-            self.ui.logPlainText.appendPlainText(logdata)
-
+        
     def do_regmapChanged(self, current, previous):
         if current == None:
             return
@@ -102,11 +89,7 @@ class AppMainWindow(QMainWindow):
                "binary file(*.bin);;All(*.*)")
         if filename == '':
             return
-        size = os.path.getsize(filename)
-        with open(filename, 'rb') as binfile:
-            content = binfile.read(size)
-            self.bincontent = list(bytes(content))
-            self._ui_init_bincontent(self.bincontent)
+        self.appdl.open(filename)
         
     @pyqtSlot()
     def on_actionImport_triggered(self):
@@ -128,17 +111,17 @@ class AppMainWindow(QMainWindow):
         self.ui.actionImport.setEnabled(True)
         self.ui.actionOpen.setEnabled(True)
         self.ui.actionConnect.setDisabled(True)
-        self.timlogger.start()
+        self.applogger.start()
 
     @pyqtSlot()
     def on_actionDisconnect_triggered(self):
+        self.applogger.stop()
         self.rx.disconnect()
         self.ui.actionDisconnect.setDisabled(True)
         self.ui.actionDownload.setDisabled(True)
         self.ui.actionImport.setDisabled(True)
         self.ui.actionOpen.setDisabled(True)
         self.ui.actionConnect.setEnabled(True)
-        self.timlogger.stop()
 
     @pyqtSlot(str)
     def on_regmapComBox_currentIndexChanged(self, block):

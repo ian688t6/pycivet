@@ -6,7 +6,7 @@ from cfs.prx import Prx
 
 def log_show(prx):
     try:
-        prx.getlog()
+        prx.get_log()
     except BaseException as e:
         if isinstance(e, KeyboardInterrupt):
             print('pycivet exit')

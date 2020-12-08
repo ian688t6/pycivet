@@ -11,7 +11,7 @@ class RegMap():
         regdata = {}
         regdata['addr'] = mo.group(2)
         regdata['description'] = mo.group(3)
-        regdata['value'] = '0'
+        regdata['value'] = '0x00'
         return regdata
 
     def load(self, worksheet):

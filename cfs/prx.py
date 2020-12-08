@@ -153,7 +153,7 @@ class Prx():
         except UnicodeDecodeError:
             pass
 
-    def getlog(self):
+    def get_log(self):
         while True:
             try:
                 data = self.dgl.read(PRX_SLAVE_ADDR, 256)
