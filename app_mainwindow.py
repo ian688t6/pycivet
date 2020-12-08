@@ -76,7 +76,11 @@ class AppMainWindow(QMainWindow):
 
 
     def do_regmapChanged(self, current, previous):
-        pass
+        if current == None:
+            return
+        regindex = self.regmap_data_model.index(current.row(), 0, QModelIndex())
+        regitem=self.regmap_data_model.itemFromIndex(regindex)
+        self.ui.regaddrLineEdit.setText(regitem.text())
 
     @pyqtSlot()
     def on_actionOpen_triggered(self):
