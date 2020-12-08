@@ -137,8 +137,8 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.binfileTab), _translate("MainWindow", "Binary File"))
         self.groupBox.setTitle(_translate("MainWindow", "Register Block"))
-        self.groupBox_3.setTitle(_translate("MainWindow", "GroupBox"))
-        self.groupBox_2.setTitle(_translate("MainWindow", "GroupBox"))
+        self.groupBox_3.setTitle(_translate("MainWindow", "Regs Map"))
+        self.groupBox_2.setTitle(_translate("MainWindow", "Reg R/W"))
         self.hexRadioBtn.setText(_translate("MainWindow", "hex"))
         self.decRadioBtn.setText(_translate("MainWindow", "dec"))
         self.binRadioBtn.setText(_translate("MainWindow", "bin"))
@@ -153,4 +153,4 @@ class Ui_MainWindow(object):
         self.actionDisconnect.setText(_translate("MainWindow", "Disconnect"))
         self.actionDisconnect.setToolTip(_translate("MainWindow", "Disconnect"))
         self.actionDownload.setText(_translate("MainWindow", "Download"))
-
+        
