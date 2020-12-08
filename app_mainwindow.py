@@ -1,17 +1,26 @@
 import sys,os
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QAbstractItemView, QFileDialog)
-from PyQt5.QtCore import (Qt, pyqtSlot, QItemSelectionModel, QDir, QModelIndex)
+from PyQt5.QtCore import (Qt, pyqtSlot, QItemSelectionModel, QDir, QModelIndex, QTimer)
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from ui.ui_mainwindow import Ui_MainWindow
 from ui.res_rc import *
 from cfs.regmap import RegMap
+from cfs.prx import Prx
 
 class AppMainWindow(QMainWindow):
     def __init__(self, parent = None):
         super().__init__(parent)
+        self.rx = Prx()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self._ui_init()
+        self._timer_init()
+
+    def _timer_init(self):
+        self.timlogger = QTimer()
+        self.timlogger.stop()
+        self.timlogger.setInterval(0)
+        self.timlogger.timeout.connect(self.do_update_log)
 
     def _ui_bin_tabview_init(self):
         self._bin_colmax = 17
@@ -74,6 +83,10 @@ class AppMainWindow(QMainWindow):
             j = 0
         self.ui.regmapTabView.setEnabled(True)
 
+    def do_update_log(self):
+        logdata = self.rx.get_logline()
+        if logdata != None:
+            self.ui.logPlainText.appendPlainText(logdata)
 
     def do_regmapChanged(self, current, previous):
         if current == None:
@@ -109,19 +122,23 @@ class AppMainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_actionConnect_triggered(self):
+        self.rx.connect(b'FT4222 A')
         self.ui.actionDisconnect.setEnabled(True)
         self.ui.actionDownload.setEnabled(True)
         self.ui.actionImport.setEnabled(True)
         self.ui.actionOpen.setEnabled(True)
         self.ui.actionConnect.setDisabled(True)
+        self.timlogger.start()
 
     @pyqtSlot()
     def on_actionDisconnect_triggered(self):
+        self.rx.disconnect()
         self.ui.actionDisconnect.setDisabled(True)
         self.ui.actionDownload.setDisabled(True)
         self.ui.actionImport.setDisabled(True)
         self.ui.actionOpen.setDisabled(True)
         self.ui.actionConnect.setEnabled(True)
+        self.timlogger.stop()
 
     @pyqtSlot(str)
     def on_regmapComBox_currentIndexChanged(self, block):
