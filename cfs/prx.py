@@ -96,6 +96,55 @@ class Prx():
                 return True
         return False
 
+    def regset(self, addr, data):
+        cmd = []
+        if (addr & 0xFFFF0000) == 0x50100000:
+            cmd.append(addr & 0xff)
+            cmd.append(0x51)
+            cmd.append(data)
+        elif (addr & 0xFFFF0000) == 0x500E0000:
+            cmd.append(addr & 0xff)
+            cmd.append(0x5E)
+            cmd.append(data)
+        elif (addr & 0xFFFF0000) == 0x38000000:
+            cmd.append(addr & 0xff)
+            cmd.append(0x38)
+            cmd.append(data)
+        elif (addr & 0xFFFF0000) == 0x00000000:
+            cmd.append(addr & 0xff)
+            cmd.append(0x00)
+            cmd.append(data)
+        elif (addr & 0xFFFF0000) == 0x50020000:
+            cmd.append(addr & 0xff)
+            cmd.append(0x52)
+            cmd.append(data)
+        else:
+            return
+        self.dgl.write(PRX_SLAVE_ADDR, cmd)
+        
+    def regget(self, addr):
+        cmd = []
+        if (addr & 0xFFFF0000) == 0x50100000:
+            cmd.append(addr & 0xff)
+            cmd.append(0x51)
+        elif (addr & 0xFFFF0000) == 0x500E0000:
+            cmd.append(addr & 0xff)
+            cmd.append(0x5E)
+        elif (addr & 0xFFFF0000) == 0x38000000:
+            cmd.append(addr & 0xff)
+            cmd.append(0x38)
+        elif (addr & 0xFFFF0000) == 0x00000000:
+            cmd.append(addr & 0xff)
+            cmd.append(0x00)
+        elif (addr & 0xFFFF0000) == 0x50020000:
+            cmd.append(addr & 0xff)
+            cmd.append(0x52)
+        else:
+            return
+        self.dgl.write(PRX_SLAVE_ADDR, cmd)
+        data = self.dgl.read(PRX_SLAVE_ADDR, 1)
+        return data[0]
+
     def readpage(self, addr, size):
         cmd = [ 0xFB, 
                 0x4A, 

@@ -12,13 +12,16 @@ from app_dl import AppDownloader
 class AppMainWindow(QMainWindow):
     def __init__(self, parent = None):
         super().__init__(parent)
-        self.regblocks=[]
         self.rx = Prx()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self._ui_init()
+        self._db_init()
         self.applogger = AppLogger(self.ui, self.rx)
         self.appdl = AppDownloader(self.ui, self.rx, self._progress_bar)
+
+    def _db_init(self):
+        self._regblocks=[]
 
     def _ui_init(self):
         self.ui.actionDisconnect.setDisabled(True)
@@ -98,8 +101,8 @@ class AppMainWindow(QMainWindow):
     def do_regmapChanged(self, current, previous):
         if current == None:
             return
-        regindex = self.regmap_data_model.index(current.row(), 0, QModelIndex())
-        regitem=self.regmap_data_model.itemFromIndex(regindex)
+        self._regindex = self.regmap_data_model.index(current.row(), 0, QModelIndex())
+        regitem = self.regmap_data_model.itemFromIndex(self._regindex)
         self.ui.regaddrLineEdit.setText(regitem.text())
 
     def closeEvent(self, event):
@@ -128,8 +131,8 @@ class AppMainWindow(QMainWindow):
         self.ui.regsetButton.setEnabled(True)
         self.regmaps = RegMap()
         self.regmaps.load(filename)
-        self.regblocks = self.regmaps.get_regblocks()
-        self.ui.regmapComBox.addItems(self.regblocks)
+        self._regblocks = self.regmaps.get_regblocks()
+        self.ui.regmapComBox.addItems(self._regblocks)
 
     @pyqtSlot()
     def on_actionConnect_triggered(self):
@@ -139,7 +142,7 @@ class AppMainWindow(QMainWindow):
         self.ui.actionOpen.setEnabled(True)
         self.ui.logStartButton.setEnabled(True)
         self.ui.logfileButton.setEnabled(True)
-        if len(self.regblocks) > 0:
+        if len(self._regblocks) > 0:
             self.ui.reggetButton.setEnabled(True)
             self.ui.regsetButton.setEnabled(True)
         self.ui.actionConnect.setDisabled(True)
@@ -179,11 +182,42 @@ class AppMainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_reggetButton_clicked(self):
-        pass
+        addrstr = self.ui.regaddrLineEdit.text()
+        if addrstr == '':
+            return
+        try:
+            addr = int(addrstr, 16)
+            data = self.rx.regget(addr)
+            if self._btngroup.checkedId() == 0:
+                self.ui.regvalLineEdit.setText('0x{:02X}'.format(data))
+            elif self._btngroup.checkedId() == 1:
+                self.ui.regvalLineEdit.setText('{0}'.format(data))
+            else:
+                self.ui.regvalLineEdit.setText('0b{:b}'.format(data))
+            if self._regindex != None:
+                item = QStandardItem('0x{:02X}'.format(data))
+                self.regmap_data_model.setItem(self._regindex.row(), 2, item)
+        except ValueError:
+            pass
 
     @pyqtSlot()
     def on_regsetButton_clicked(self):
-        pass
+        addrstr = self.ui.regaddrLineEdit.text()
+        if addrstr == '':
+            return
+        datastr = self.ui.regvalLineEdit.text()
+        if datastr == '':
+            return
+        try:
+            data = int(datastr, 0)
+            addr = int(addrstr, 16)
+            self.rx.regset(addr, data)
+            rdata = self.rx.regget(addr)
+            if self._regindex != None:
+                item = QStandardItem('0x{:02X}'.format(rdata))
+                self.regmap_data_model.setItem(self._regindex.row(), 2, item)
+        except ValueError:
+            pass
 
     @pyqtSlot()
     def on_logStartButton_clicked(self):
@@ -209,4 +243,14 @@ class AppMainWindow(QMainWindow):
         pass
 
     def do_toggle_datafmt(self, id, checked):
-        pass
+        datastr = self.ui.regvalLineEdit.text()
+        if datastr == '':
+            return
+        data = int(datastr, 0)
+        if checked == True:
+            if id == 0:
+                self.ui.regvalLineEdit.setText('0x{:02X}'.format(data))
+            elif id == 1:
+                self.ui.regvalLineEdit.setText('{0}'.format(data))
+            else:
+                self.ui.regvalLineEdit.setText('0b{:b}'.format(data))
