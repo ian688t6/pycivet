@@ -10,6 +10,7 @@ class AppDownloader(QTimer):
         super().__init__(parent)
         self.ui = ui
         self.rx = rx
+        self._binfile = ''
         self._ui_bin_tabview_init()
         self._progbar = progbar
         self.stop()
@@ -47,6 +48,7 @@ class AppDownloader(QTimer):
         self.ui.binTabView.setEnabled(True)
 
     def open(self, filename, verify=1):
+        self._binfile = filename
         self._verify = verify
         self._binsize = os.path.getsize(filename)
         self._pagesize = 1024
@@ -57,6 +59,12 @@ class AppDownloader(QTimer):
             self._ui_init_bincontent(self._bincontent)
             self._progbar.setRange(0, self._binsize)
             self._progbar.setValue(0)
+
+    def start(self):
+        self._binsize = os.path.getsize(self._binfile)
+        self._pagesize = 1024
+        self._address = 0
+        super().start()
 
     def do_download(self):
         if self._binsize > 0:

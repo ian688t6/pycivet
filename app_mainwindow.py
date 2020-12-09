@@ -150,6 +150,7 @@ class AppMainWindow(QMainWindow):
     @pyqtSlot()
     def on_actionDisconnect_triggered(self):
         self.applogger.stop()
+        self.ui.logStartButton.setText('Start')
         self.rx.disconnect()
         self.ui.actionDisconnect.setDisabled(True)
         self.ui.actionDownload.setDisabled(True)
@@ -163,6 +164,8 @@ class AppMainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_actionDownload_triggered(self):
+        if self.appdl.isActive() == True:
+            return
         self.applogger.stop()
         self.ui.logStartButton.setText('Start')
         self.rx.writesram(0x50100088, 0x01)
