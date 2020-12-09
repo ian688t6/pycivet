@@ -198,7 +198,7 @@ class AppMainWindow(QMainWindow):
             elif self._btngroup.checkedId() == 1:
                 self.ui.regvalLineEdit.setText('{0}'.format(data))
             else:
-                self.ui.regvalLineEdit.setText('0b{:b}'.format(data))
+                self.ui.regvalLineEdit.setText('0b{:08b}'.format(data))
             if self._regindex != None:
                 item = QStandardItem('0x{:02X}'.format(data))
                 self.regmap_data_model.setItem(self._regindex.row(), 2, item)
@@ -258,4 +258,4 @@ class AppMainWindow(QMainWindow):
             elif id == 1:
                 self.ui.regvalLineEdit.setText('{0}'.format(data))
             else:
-                self.ui.regvalLineEdit.setText('0b{:b}'.format(data))
+                self.ui.regvalLineEdit.setText('0b{:08b}'.format(data))
