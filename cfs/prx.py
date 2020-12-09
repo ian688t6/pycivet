@@ -17,11 +17,13 @@ class Prx():
             return list(bytes(content))
 
     def connect(self, desc):
+        if self.dgl.open(desc) == False:
+            return False
         self.connected = 1
-        self.dgl.open(desc)
         self.isc_enter()
         self.getid()
         self.isc_exit()
+        return True
 
     def disconnect(self):
         if self.connected == 1:

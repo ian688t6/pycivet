@@ -136,7 +136,9 @@ class AppMainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_actionConnect_triggered(self):
-        self.rx.connect(b'FT4222 A')
+        if self.rx.connect(b'FT4222 A') == False:
+            print('Dongle connect fail')
+            return
         self.ui.actionDisconnect.setEnabled(True)
         self.ui.actionImport.setEnabled(True)
         self.ui.actionOpen.setEnabled(True)

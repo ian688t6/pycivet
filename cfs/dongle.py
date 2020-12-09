@@ -13,6 +13,8 @@ class Dongle():
             self.devs.append(devinfo)     
 
     def open(self, devname):
+        if len(self.devs) == 0:
+            return False
         for d in self.devs:
             if d['description'] == devname:
                 print('open ' + str(devname))
