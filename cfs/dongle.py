@@ -53,3 +53,13 @@ class Dongle():
             ft4222.I2CMaster_Write(self.ft.handle, slave, data, len(data))
         elif self._desc == b'UM232H':
             return self.ft232.I2CMaster_Write(slave, data, len(data))
+
+    def ioinit(self):
+        if self._desc == b'FT4222 A' or self._desc == b'FT4222 B':
+            ft4222.GPIO_Init(self.ft.handle, 1, 1, 0, 1)
+            ft4222.GPIO_Write(self.ft.handle, 2, 0)
+
+    def iowrite(self, port, val):
+        if self._desc == b'FT4222 A' or self._desc == b'FT4222 B':
+            ft4222.GPIO_Write(self.ft.handle, port, val)
+

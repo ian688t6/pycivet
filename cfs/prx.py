@@ -98,6 +98,9 @@ class Prx():
                 return True
         return False
 
+    def enb(self, state):
+        self.dgl.iowrite(2, state)
+
     def regset(self, addr, data):
         cmd = []
         if (addr & 0xFFFF0000) == 0x50100000:

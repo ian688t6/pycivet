@@ -259,3 +259,4 @@ class AppMainWindow(QMainWindow):
                 self.ui.regvalLineEdit.setText('{0}'.format(data))
             else:
                 self.ui.regvalLineEdit.setText('0b{:08b}'.format(data))
+
