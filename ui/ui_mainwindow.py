@@ -159,7 +159,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Civet"))
         self.groupBox_5.setTitle(_translate("MainWindow", "Control Panel"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.binfileTab), _translate("MainWindow", "Binary File"))
         self.groupBox.setTitle(_translate("MainWindow", "Register Block"))
