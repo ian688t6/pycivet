@@ -8,7 +8,7 @@ PRX_SLAVE_ADDR = 0x24
 class Prx():
     def __init__(self):
         self.dgl = Dongle()
-        pass
+        self.connected = 0
 
     def _readbin(self, binfile):
         size = os.path.getsize(binfile)
@@ -17,13 +17,16 @@ class Prx():
             return list(bytes(content))
 
     def connect(self, desc):
+        self.connected = 1
         self.dgl.open(desc)
         self.isc_enter()
         self.getid()
         self.isc_exit()
 
     def disconnect(self):
-        self.dgl.close()
+        if self.connected == 1:
+            self.dgl.close()
+        self.connected = 0
 
     def isc_enter(self):
         cmd = [ 0xFB, 

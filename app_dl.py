@@ -1,16 +1,17 @@
 import sys,os
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QAbstractItemView, QFileDialog)
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QProgressBar,QAbstractItemView, QFileDialog)
 from PyQt5.QtCore import (Qt, pyqtSlot, QItemSelectionModel, QDir, QModelIndex, QTimer)
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from ui.ui_mainwindow import Ui_MainWindow
 from ui.res_rc import *
 
 class AppDownloader(QTimer):
-    def __init__(self, ui, rx, parent = None):
+    def __init__(self, ui, rx, progbar, parent = None):
         super().__init__(parent)
         self.ui = ui
         self.rx = rx
         self._ui_bin_tabview_init()
+        self._progbar = progbar
         self.stop()
         self.setInterval(0)
         self.timeout.connect(self.do_download)
@@ -54,6 +55,8 @@ class AppDownloader(QTimer):
             content = binfile.read(self._binsize)
             self._bincontent = list(bytes(content))
             self._ui_init_bincontent(self._bincontent)
+            self._progbar.setRange(0, self._binsize)
+            self._progbar.setValue(0)
 
     def do_download(self):
         if self._binsize > 0:
@@ -62,13 +65,21 @@ class AppDownloader(QTimer):
                 if self._verify:
                     verifydata = self.rx.readpage(self._address, self._pagesize)
                     if verifydata != self._bincontent[self._address: (self._address + self._pagesize)]:
+                        self.rx.writesram(0x50100031, 0x01)
+                        self.stop()
                         return
                 self._binsize -= self._pagesize
                 self._address += self._pagesize
             else:
                 self.rx.writepage(self._address, self._bincontent[self._address:], self._binsize)
                 if self._verify:
-                    verifydata = self.rx.readpage(self._address, self._pagesize)
+                    verifydata = self.rx.readpage(self._address, self._binsize)
                     if verifydata != self._bincontent[self._address:]:
+                        self.rx.writesram(0x50100031, 0x01)
+                        self.stop()
                         return
+                self._address += self._binsize
                 self._binsize = 0
+                self.rx.writesram(0x50100031, 0x01)
+                self.stop()
+            self._progbar.setValue(self._address)

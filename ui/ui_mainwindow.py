@@ -15,9 +15,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(801, 507)
-        MainWindow.setStyleSheet("background-color: rgb(46, 52, 54);\n"
-"font: 10pt \"Source Code Pro\";\n"
-"color: rgb(243, 243, 243);")
+        MainWindow.setStyleSheet("font: 10pt \"Source Code Pro\";\n")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)

@@ -12,18 +12,23 @@ from app_dl import AppDownloader
 class AppMainWindow(QMainWindow):
     def __init__(self, parent = None):
         super().__init__(parent)
+        self.regblocks=[]
         self.rx = Prx()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self._ui_init()
         self.applogger = AppLogger(self.ui, self.rx)
-        self.appdl = AppDownloader(self.ui, self.rx)
+        self.appdl = AppDownloader(self.ui, self.rx, self._progress_bar)
 
     def _ui_init(self):
         self.ui.actionDisconnect.setDisabled(True)
         self.ui.actionDownload.setDisabled(True)
         self.ui.actionImport.setDisabled(True)
         self.ui.actionOpen.setDisabled(True)
+        self.ui.reggetButton.setDisabled(True)
+        self.ui.regsetButton.setDisabled(True)
+        self.ui.logStartButton.setDisabled(True)
+        self.ui.logfileButton.setDisabled(True)
         self._btngroup = QButtonGroup()
         self._btngroup.addButton(self.ui.hexRadioBtn)
         self._btngroup.setId(self.ui.hexRadioBtn, 0)
@@ -39,9 +44,7 @@ class AppMainWindow(QMainWindow):
     def _ui_statusbar_init(self):
         self._progress_bar = QProgressBar(self)      # progressBar1
         self._progress_bar.setMaximumWidth(200)
-        self._progress_bar.setMinimum(5)
-        self._progress_bar.setMaximum(50)
-        self._progress_bar.setValue(self.ui.logPlainText.font().pointSize())
+        self._progress_bar.setValue(0)
         self.ui.statusbar.addWidget(self._progress_bar)
 
     def _ui_reg_tabview_init(self):
@@ -99,8 +102,14 @@ class AppMainWindow(QMainWindow):
         regitem=self.regmap_data_model.itemFromIndex(regindex)
         self.ui.regaddrLineEdit.setText(regitem.text())
 
+    def closeEvent(self, event):
+        self.applogger.stop()
+        self.appdl.stop()
+        self.rx.disconnect()
+
     @pyqtSlot()
     def on_actionOpen_triggered(self):
+        self.ui.actionDownload.setEnabled(True)
         curpath = os.getcwd()
         filename,flt = QFileDialog.getOpenFileName(self,"Open the binary file",curpath,
                "binary file(*.bin);;All(*.*)")
@@ -115,20 +124,25 @@ class AppMainWindow(QMainWindow):
                "regmap file(*.xlsx);;All(*.*)")
         if filename == '':
             return
+        self.ui.reggetButton.setEnabled(True)
+        self.ui.regsetButton.setEnabled(True)
         self.regmaps = RegMap()
         self.regmaps.load(filename)
-        regblocks = self.regmaps.get_regblocks()
-        self.ui.regmapComBox.addItems(regblocks)
+        self.regblocks = self.regmaps.get_regblocks()
+        self.ui.regmapComBox.addItems(self.regblocks)
 
     @pyqtSlot()
     def on_actionConnect_triggered(self):
         self.rx.connect(b'FT4222 A')
         self.ui.actionDisconnect.setEnabled(True)
-        self.ui.actionDownload.setEnabled(True)
         self.ui.actionImport.setEnabled(True)
         self.ui.actionOpen.setEnabled(True)
+        self.ui.logStartButton.setEnabled(True)
+        self.ui.logfileButton.setEnabled(True)
+        if len(self.regblocks) > 0:
+            self.ui.reggetButton.setEnabled(True)
+            self.ui.regsetButton.setEnabled(True)
         self.ui.actionConnect.setDisabled(True)
-        self.applogger.start()
 
     @pyqtSlot()
     def on_actionDisconnect_triggered(self):
@@ -138,7 +152,25 @@ class AppMainWindow(QMainWindow):
         self.ui.actionDownload.setDisabled(True)
         self.ui.actionImport.setDisabled(True)
         self.ui.actionOpen.setDisabled(True)
+        self.ui.logStartButton.setDisabled(True)
+        self.ui.logfileButton.setDisabled(True)
+        self.ui.reggetButton.setDisabled(True)
+        self.ui.regsetButton.setDisabled(True)        
         self.ui.actionConnect.setEnabled(True)
+
+    @pyqtSlot()
+    def on_actionDownload_triggered(self):
+        self.applogger.stop()
+        self.ui.logStartButton.setText('Start')
+        self.rx.writesram(0x50100088, 0x01)
+        self.rx.writesram(0x50100031, 0x00)
+        self.rx.writesram(0x50100038, 0xFF)
+        self.rx.writesram(0x38000074, 0x10)
+        self.rx.writesram(0x38000075, 0x10)
+        self.rx.writesram(0x50020000, 0x00)
+        self.rx.writesram(0x50020040, 0x00)
+        self.rx.writesram(0x3800005F, 0x44)
+        self.appdl.start()
 
     @pyqtSlot(str)
     def on_regmapComBox_currentIndexChanged(self, block):
@@ -155,10 +187,25 @@ class AppMainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_logStartButton_clicked(self):
-        pass
+        if self.ui.logStartButton.text() == 'Start':
+            self.applogger.start()
+            self.ui.logStartButton.setText('Stop')
+        else:
+            self.applogger.stop()
+            self.ui.logStartButton.setText('Start')
 
     @pyqtSlot()
     def on_logfileButton_clicked(self):
+        self.applogger.stop()
+        self.ui.logStartButton.setText('Start')
+        curpath = os.getcwd()
+        filename,flt = QFileDialog.getOpenFileName(self,"Open the log file",curpath,
+               "binary file(*.txt);;All(*.*)")
+        if filename == '':
+            self.ui.logilelineEdit.setText(filename)
+            return
+        self.ui.logilelineEdit.setText(filename)
+        self.applogger.save(filename)
         pass
 
     def do_toggle_datafmt(self, id, checked):
