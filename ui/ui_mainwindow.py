@@ -62,7 +62,6 @@ class Ui_MainWindow(object):
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem, 1, 4, 1, 1)
         self.decRadioBtn = QtWidgets.QRadioButton(self.groupBox_2)
-        self.decRadioBtn.setStyleSheet("color: rgb(243, 243, 243);")
         self.decRadioBtn.setObjectName("decRadioBtn")
         self.gridLayout.addWidget(self.decRadioBtn, 3, 3, 1, 1)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
