@@ -139,6 +139,8 @@ class AppMainWindow(QMainWindow):
         if self.rx.connect(b'FT4222 A') == False:
             print('Dongle connect fail')
             return
+        if self.appdl.isopen() == True:
+            self.ui.actionDownload.setEnabled(True)
         self.ui.actionDisconnect.setEnabled(True)
         self.ui.actionImport.setEnabled(True)
         self.ui.actionOpen.setEnabled(True)
@@ -151,6 +153,8 @@ class AppMainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_actionDisconnect_triggered(self):
+        if self.appdl.isActive() == True:
+            return
         self.applogger.stop()
         self.ui.logStartButton.setText('Start')
         self.rx.disconnect()
@@ -187,6 +191,9 @@ class AppMainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_reggetButton_clicked(self):
+        if self.appdl.isActive() == True:
+            return
+
         addrstr = self.ui.regaddrLineEdit.text()
         if addrstr == '':
             return
@@ -207,6 +214,9 @@ class AppMainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_regsetButton_clicked(self):
+        if self.appdl.isActive() == True:
+            return
+
         addrstr = self.ui.regaddrLineEdit.text()
         if addrstr == '':
             return
@@ -226,6 +236,9 @@ class AppMainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_logStartButton_clicked(self):
+        if self.appdl.isActive() == True:
+            return
+            
         if self.ui.logStartButton.text() == 'Start':
             self.applogger.start()
             self.ui.logStartButton.setText('Stop')
@@ -235,6 +248,8 @@ class AppMainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_logfileButton_clicked(self):
+        if self.appdl.isActive() == True:
+            return
         self.applogger.stop()
         self.ui.logStartButton.setText('Start')
         curpath = os.getcwd()

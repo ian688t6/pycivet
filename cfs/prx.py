@@ -31,7 +31,13 @@ class Prx():
             self.dgl.close()
         self.enb(1)
         self.connected = 0
-        
+    
+    def reconnect(self):
+        time.sleep(0.1)
+        self.disconnect()
+        time.sleep(0.1)
+        self.connect(b'FT4222 A')
+
     def isc_enter(self):
         cmd = [ 0xFB, 
                 0x4A, 
