@@ -17,6 +17,7 @@ class Prx():
             return list(bytes(content))
 
     def connect(self, desc):
+        self.enb(0)
         if self.dgl.open(desc) == False:
             return False
         self.connected = 1
@@ -28,8 +29,9 @@ class Prx():
     def disconnect(self):
         if self.connected == 1:
             self.dgl.close()
+        self.enb(1)
         self.connected = 0
-
+        
     def isc_enter(self):
         cmd = [ 0xFB, 
                 0x4A, 
@@ -99,7 +101,7 @@ class Prx():
         return False
 
     def enb(self, state):
-        self.dgl.iowrite(2, state)
+        self.dgl.port2_write(state)
 
     def regset(self, addr, data):
         cmd = []
